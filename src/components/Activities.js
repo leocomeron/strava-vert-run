@@ -1,15 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
 import { useDispatch, useSelector } from "react-redux";
 import { activitiesActions } from "../store/activities";
 import { datesActions } from "../store/dates";
+import TableHeader from "./TableHeader";
+import TableData from "./TableData";
 
 const Activities = () => {
+  const [access_token, setAccess_token] = useState();
   const data = useSelector((state) => state.activities);
-  const dates = useSelector((state) => state.dates);
-
   const dispatch = useDispatch();
 
   const fetchData = async () => {
@@ -34,18 +35,19 @@ const Activities = () => {
       });
     };
 
-    function reAuthorize() {
-      axios
+    const reAuthorize = async () => {
+      await axios
         .post(auth_link, {
           client_id: "78996",
           client_secret: "9e34535d5f6e344afe518fdfcfdd1044e8fffd49",
-          refresh_token: "5bc757936d9ce7231fae7938d3fdd5db7565c540",
+          refresh_token: "f5e5b5376063fc05507641d6a54f23e10b838644",
           grant_type: "refresh_token",
         })
         .then(function (response) {
-          getActivites(response);
+          setAccess_token(response.data.access_token);
+          getActivites();
         });
-    }
+    };
     reAuthorize();
   };
 
@@ -72,23 +74,17 @@ const Activities = () => {
       </Link>
       <table>
         <tbody>
-          <tr>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Distance (km)</th>
-            <th>Time</th>
-            <th>Elevation gain (m)</th>
-          </tr>
-
-          {data.activities.map((workout) => {
+          <TableHeader />
+          {data.activities.map((activity) => {
             return (
-              <tr key={workout.upload_id}>
-                <td>{workout.name}</td>
-                <td>{dateHandler(workout.start_date)}</td>
-                <td>{(workout.distance / 1000).toFixed(2)}</td>
-                <td>{timeHandler(workout.moving_time)}</td>
-                <td>{Math.round(workout.total_elevation_gain)}</td>
-              </tr>
+              <TableData
+                key={activity.upload_id}
+                name={activity.name}
+                startDate={dateHandler(activity.start_date)}
+                distance={(activity.distance / 1000).toFixed(2)}
+                movingTime={timeHandler(activity.moving_time)}
+                totalElevationGain={Math.round(activity.total_elevation_gain)}
+              />
             );
           })}
         </tbody>

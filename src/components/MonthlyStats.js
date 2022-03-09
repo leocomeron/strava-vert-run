@@ -1,24 +1,5 @@
-import { useEffect } from "react";
-
+import { useSelector } from "react-redux";
 import MonthStat from "./MonthStat";
-
-import { useDispatch, useSelector } from "react-redux";
-import { activitiesActions } from "../store/activities";
-
-const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 const timeHandler = (time) => {
   return new Date(time * 1000).toISOString().substr(11, 8);
@@ -27,20 +8,19 @@ const timeHandler = (time) => {
 const RecentMonthsStats = () => {
   const data = useSelector((state) => state.activities);
   const dates = useSelector((state) => state.dates);
-  const dispatch = useDispatch();
 
-  const initialMonth = dates.dates; // have to store in redux from Activities.js
+  const initialMonth = dates.dates;
 
   let firstMonth = [];
   let secondMonth = [];
   let currentMonth = [];
   data.activities.map((activity) => {
     if (new Date(activity.start_date).getMonth() === initialMonth) {
-      firstMonth.push(activity);
+      return firstMonth.push(activity);
     } else if (new Date(activity.start_date).getMonth() === initialMonth + 1) {
-      secondMonth.push(activity);
+      return secondMonth.push(activity);
     } else {
-      currentMonth.push(activity);
+      return currentMonth.push(activity);
     }
   });
 
@@ -56,7 +36,7 @@ const RecentMonthsStats = () => {
   for (let i = 0; i < monthsArray.length; i++) {
     let params = monthsArray[i].reduce((previousValue, currentValue) => {
       return {
-        month: monthNames[i],
+        month: i + initialMonth,
         distance: previousValue.distance + currentValue.distance,
         moving_time: previousValue.moving_time + currentValue.moving_time,
         total_elevation_gain:
@@ -66,8 +46,6 @@ const RecentMonthsStats = () => {
     }, intialParameters);
     unifiedData.push(params);
   }
-
-  console.log(unifiedData);
 
   return (
     <div>
