@@ -28,7 +28,7 @@ const Activities = () => {
       const initialDate = new Date(startYear + 2000 - 100, startMonth, "01");
       const initialDateInEpoch = Date.parse(initialDate) / 1000;
 
-      const activities_link = `https://www.strava.com/api/v3/athlete/activities?access_token=7902148a7d7c4547c245f5948905f57f422f2024&per_page=${maxNumOfActivities}&before=${todayInEpoch}&after=${initialDateInEpoch}`;
+      const activities_link = `https://www.strava.com/api/v3/athlete/activities?access_token=${access_token}&per_page=${maxNumOfActivities}&before=${todayInEpoch}&after=${initialDateInEpoch}`;
 
       await axios.get(activities_link).then(function (response) {
         dispatch(activitiesActions.selectActivities(response.data));
@@ -45,7 +45,7 @@ const Activities = () => {
         })
         .then(function (response) {
           setAccess_token(response.data.access_token);
-          getActivites();
+          getActivites(response);
         });
     };
     reAuthorize();
@@ -53,7 +53,7 @@ const Activities = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [access_token]);
 
   const dateHandler = (date) => {
     let year = date.slice(0, 4);
