@@ -1,22 +1,11 @@
 import { Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-
-import TableData from "./TableData";
 import TableHeader from "./TableHeader";
+import { Table, TableBody, TableContainer, TableCell, TableRow } from "@mui/material";
 import { selectedMonthActions } from "../store/selectedMonth";
-
-const dateHandler = (date) => {
-  let year = date.slice(0, 4);
-  let month = date.slice(5, 7);
-  let day = date.slice(8, 10);
-
-  return `${day}-${month}-${year}`;
-};
-
-const timeHandler = (time) => {
-  return new Date(time * 1000).toISOString().substr(11, 8);
-};
+import { Button } from "@mui/material";
+import { dateHandler, timeHandler } from "../helpers";
 
 const SelectedMonthActivities = (props) => {
   const data = useSelector((state) => state.activities);
@@ -24,35 +13,40 @@ const SelectedMonthActivities = (props) => {
 
   return (
     <Fragment>
-      <Link to="./">
-        <button
+      <Link to="./" style={{ textDecoration: "none" }}>
+        <Button
+          variant="contained"
+          sx={{ mt: 2 }}
           onClick={() => {
             dispatch(selectedMonthActions.selectSelectedMonth(undefined));
           }}
         >
           Back to Initial Page
-        </button>
+        </Button>
       </Link>
-      <table>
-        <tbody>
+      <TableContainer sx={{ marginTop: 4 }}>
+        <Table sx={{ minWidth: 650, maxWidth: 900, margin: "auto" }} aria-label="simple table">
           <TableHeader />
-          {data.activities.map((activity) => {
-            return (
-              props.selectedMonth ===
-                new Date(activity.start_date).getMonth() && (
-                <TableData
-                  key={activity.upload_id}
-                  name={activity.name}
-                  startDate={dateHandler(activity.start_date)}
-                  distance={(activity.distance / 1000).toFixed(2)}
-                  movingTime={timeHandler(activity.moving_time)}
-                  totalElevationGain={Math.round(activity.total_elevation_gain)}
-                />
-              )
-            );
-          })}
-        </tbody>
-      </table>
+          <TableBody>
+            {data.activities.map(
+              (activity, index) =>
+                props.selectedMonth === new Date(activity.start_date).getMonth() && (
+                  <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                    <TableCell component="th" scope="row">
+                      {activity.name}
+                    </TableCell>
+                    <TableCell align="center">{dateHandler(activity.start_date)}</TableCell>
+                    <TableCell align="center">{(activity.distance / 1000).toFixed(2)}</TableCell>
+                    <TableCell align="center">{timeHandler(activity.moving_time)}</TableCell>
+                    <TableCell align="center">
+                      {Math.round(activity.total_elevation_gain)}
+                    </TableCell>
+                  </TableRow>
+                )
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Fragment>
   );
 };

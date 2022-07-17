@@ -5,16 +5,27 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { activitiesActions } from "../store/activities";
 import { datesActions } from "../store/dates";
+import {
+  Table,
+  TableBody,
+  TableContainer,
+  TableCell,
+  TableRow,
+  CircularProgress,
+} from "@mui/material";
+import { Button, Grid, Box } from "@mui/material";
 import TableHeader from "./TableHeader";
-import TableData from "./TableData";
+import { dateHandler, timeHandler } from "../helpers";
 
 const Activities = () => {
   const [access_token, setAccess_token] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const data = useSelector((state) => state.activities);
   const dispatch = useDispatch();
 
   const fetchData = async () => {
     const auth_link = "https://www.strava.com/oauth/token";
+    setIsLoading(true);
 
     const getActivites = async () => {
       const maxNumOfActivities = 100;
@@ -30,9 +41,11 @@ const Activities = () => {
 
       const activities_link = `https://www.strava.com/api/v3/athlete/activities?access_token=${access_token}&per_page=${maxNumOfActivities}&before=${todayInEpoch}&after=${initialDateInEpoch}`;
 
-      await axios.get(activities_link).then(function (response) {
-        dispatch(activitiesActions.selectActivities(response.data));
-      });
+      access_token &&
+        (await axios.get(activities_link).then(function (response) {
+          dispatch(activitiesActions.selectActivities(response.data));
+          setIsLoading(false);
+        }));
     };
 
     const reAuthorize = async () => {
@@ -55,41 +68,37 @@ const Activities = () => {
     fetchData();
   }, [access_token]);
 
-  const dateHandler = (date) => {
-    let year = date.slice(0, 4);
-    let month = date.slice(5, 7);
-    let day = date.slice(8, 10);
-
-    return `${day}-${month}-${year}`;
-  };
-
-  const timeHandler = (time) => {
-    return new Date(time * 1000).toISOString().substr(11, 8);
-  };
-
   return (
-    <div>
-      <Link to="/stats">
-        <button>See last 3 month stats</button>
+    <Grid>
+      <Link to="/stats" style={{ textDecoration: "none" }}>
+        <Button variant="contained" sx={{ mt: 2 }}>
+          last 3 months
+        </Button>
       </Link>
-      <table>
-        <tbody>
+      {isLoading && (
+        <Box sx={{ display: "flex", justifyContent: "center", m: 2 }}>
+          <CircularProgress size={30} />
+        </Box>
+      )}
+      <TableContainer sx={{ marginTop: 4 }}>
+        <Table sx={{ minWidth: 650, maxWidth: 900, margin: "auto" }} aria-label="simple table">
           <TableHeader />
-          {data.activities.map((activity) => {
-            return (
-              <TableData
-                key={activity.upload_id}
-                name={activity.name}
-                startDate={dateHandler(activity.start_date)}
-                distance={(activity.distance / 1000).toFixed(2)}
-                movingTime={timeHandler(activity.moving_time)}
-                totalElevationGain={Math.round(activity.total_elevation_gain)}
-              />
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+          <TableBody>
+            {data.activities.map((activity, index) => (
+              <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                <TableCell component="th" scope="row">
+                  {activity.name}
+                </TableCell>
+                <TableCell align="center">{dateHandler(activity.start_date)}</TableCell>
+                <TableCell align="center">{(activity.distance / 1000).toFixed(2)}</TableCell>
+                <TableCell align="center">{timeHandler(activity.moving_time)}</TableCell>
+                <TableCell align="center">{Math.round(activity.total_elevation_gain)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Grid>
   );
 };
 

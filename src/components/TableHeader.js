@@ -1,12 +1,16 @@
+import { TableHead, TableRow, TableCell } from "@mui/material";
+
 const TableHeader = () => {
   return (
-    <tr>
-      <th>Name</th>
-      <th>Date</th>
-      <th>Distance (km)</th>
-      <th>Time</th>
-      <th>Elevation gain (m)</th>
-    </tr>
+    <TableHead>
+      <TableRow>
+        <TableCell>Name</TableCell>
+        <TableCell align="center">Date</TableCell>
+        <TableCell align="center">Distance (km)</TableCell>
+        <TableCell align="center">Time</TableCell>
+        <TableCell align="center">Elevation gain (m)</TableCell>
+      </TableRow>
+    </TableHead>
   );
 };
 

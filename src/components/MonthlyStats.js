@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import MonthStat from "./MonthStat";
+import { Grid } from "@mui/material";
 
 const timeHandler = (time) => {
   return new Date(time * 1000).toISOString().substr(11, 8);
@@ -40,27 +41,28 @@ const RecentMonthsStats = () => {
         distance: previousValue.distance + currentValue.distance,
         moving_time: previousValue.moving_time + currentValue.moving_time,
         total_elevation_gain:
-          previousValue.total_elevation_gain +
-          currentValue.total_elevation_gain,
+          previousValue.total_elevation_gain + currentValue.total_elevation_gain,
       };
     }, intialParameters);
     unifiedData.push(params);
   }
 
   return (
-    <div>
-      {unifiedData.map((month) => {
+    <Grid container justifyContent="center" direction="column" alignItems="center">
+      {unifiedData.map((month, index) => {
         return (
-          <MonthStat
-            key={month.month}
-            month={month.month}
-            totalDistance={Math.round(month.distance / 1000)}
-            totalTime={timeHandler(month.moving_time)}
-            totalElevationGain={Math.round(month.total_elevation_gain)}
-          />
+          <Grid item key={index} justifyContent="center">
+            <MonthStat
+              key={index}
+              month={month.month}
+              totalDistance={Math.round(month.distance / 1000)}
+              totalTime={timeHandler(month.moving_time)}
+              totalElevationGain={Math.round(month.total_elevation_gain)}
+            />
+          </Grid>
         );
       })}
-    </div>
+    </Grid>
   );
 };
 
