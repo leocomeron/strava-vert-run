@@ -34,6 +34,7 @@ const MonthStat = (props) => {
           <Link
             to="/"
             onClick={() => dispatch(selectedMonthActions.selectSelectedMonth(props.month))}
+            style={{ textDecoration: "none", color: "#4DA1A9" }}
           >
             <Typography variant="h5">Month: {monthNames[monthHandler(props.month)]}</Typography>
           </Link>
