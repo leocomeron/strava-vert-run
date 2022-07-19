@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import MonthStat from "./MonthStat";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 
 const timeHandler = (time) => {
   return new Date(time * 1000).toISOString().substr(11, 8);
@@ -47,13 +47,19 @@ const RecentMonthsStats = () => {
     unifiedData.push(params);
   }
 
+  const images = ["./runner.jpg", "./mountain_bike.jpg", "./tennis_player.jpg"];
+
   return (
-    <Grid container justifyContent="center" direction="column" alignItems="center">
+    <Grid container justifyContent="center" alignItems="center">
+      <Grid item xs={12}>
+        <Typography variant="h3">Select a month to see your stats</Typography>
+      </Grid>
       {unifiedData.map((month, index) => {
         return (
-          <Grid item key={index} justifyContent="center">
+          <Grid item key={index} justifyContent="center" margin={2}>
             <MonthStat
               key={index}
+              image={images[index]}
               month={month.month}
               totalDistance={Math.round(month.distance / 1000)}
               totalTime={timeHandler(month.moving_time)}

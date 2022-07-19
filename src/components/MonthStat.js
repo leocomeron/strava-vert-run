@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Typography, Card, CardContent } from "@mui/material";
+import { Typography, Card, CardContent, CardMedia } from "@mui/material";
 import { selectedMonthActions } from "../store/selectedMonth";
 import { useDispatch } from "react-redux";
 
@@ -29,13 +29,20 @@ const MonthStat = (props) => {
   const dispatch = useDispatch();
   return (
     <>
-      <Card sx={{ maxWidth: 275, margin: 2 }}>
+      <Card sx={{ maxWidth: 275, margin: 2, borderRadius: 4, boxShadow: 8 }}>
         <CardContent>
           <Link
             to="/"
             onClick={() => dispatch(selectedMonthActions.selectSelectedMonth(props.month))}
             style={{ textDecoration: "none", color: "#4DA1A9" }}
           >
+            <CardMedia
+              component="img"
+              alt="green iguana"
+              height="140"
+              image={props.image}
+              sx={{ borderRadius: 2 }}
+            />
             <Typography variant="h5">Month: {monthNames[monthHandler(props.month)]}</Typography>
           </Link>
           <Typography>Distance: {props.totalDistance}km</Typography>
